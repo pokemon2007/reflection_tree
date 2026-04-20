@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "version": "1.0",
+    "title": "Daily Reflection Tree",
+    "description": "A deterministic end-of-day reflection tool covering three psychological axes: Locus of Control (Victim vs Victor), Orientation (Entitlement vs Contribution), and Radius of Concern (Self-centric vs Altrocentric).",
+    "axes": [
+      { "id": "axis1", "name": "Locus", "poles": ["victim", "victor"] },
+      { "id": "axis2", "name": "Orientation", "poles": ["entitlement", "contribution"] },
+      { "id": "axis3", "name": "Radius", "poles": ["self", "altro"] }
+    ],
+    "entry": "START",
+    "total_nodes": 26,
+    "note": "State tracks signal tallies per axis. Decision nodes compare tallies to determine dominant pole. Reflection and summary nodes use {placeholder} interpolation from accumulated state."
+  },
+
+  "state_schema": {
+    "axis1": { "victor": 0, "victim": 0, "dominant": null },
+    "axis2": { "contribution": 0, "entitlement": 0, "dominant": null },
+    "axis3": { "altro": 0, "self": 0, "dominant": null },
+    "answers": {},
+    "summary_profile": null
+  },
+
+  "nodes": [
+
+    {
+      "id": "START",
+      "type": "start",
+      "text": "Good evening. Take a breath — the day is done. Let's walk through it together, honestly. No judgement, no grades. Just you, looking back.",
+      "next": "Q1_A"
+    },
+
+    {
+      "id": "Q1_A",
+      "type": "question",
+      "axis": "axis1",
+      "text": "When you woke up today, how did you feel about how the day would go?",
+      "options": [
+        { "label": "A", "text": "Ready to steer things my way and make good happen.", "signal": "axis1:victor", "next": "Q1_B" },
+        { "label": "B", "text": "Hoping luck would be on my side.", "signal": "axis1:victim", "next": "Q1_B" },
+        { "label": "C", "text": "Like the day might throw me curveballs I couldn't dodge.", "signal": "axis1:victim", "next": "Q1_B" },
+        { "label": "D", "text": "Unsure, but willing to try and handle whatever comes.", "signal": "axis1:victor", "next": "Q1_B" }
+      ]
+    },
+
+    {
+      "id": "Q1_B",
+      "type": "question",
+      "axis": "axis1",
+      "text": "When something didn't go your way today, what popped into your head first?",
+      "options": [
+        { "label": "A", "text": "\"What can I do to turn this around?\"", "signal": "axis1:victor", "next": "Q1_C" },
+        { "label": "B", "text": "\"This isn't my fault, it's just how things are.\"", "signal": "axis1:victim", "next": "Q1_C" },
+        { "label": "C", "text": "\"Why does this always happen to me?\"", "signal": "axis1:victim", "next": "Q1_C" },
+        { "label": "D", "text": "\"Okay, what's my next move?\"", "signal": "axis1:victor", "next": "Q1_C" }
+      ]
+    },
+
+    {
+      "id": "Q1_C",
+      "type": "question",
+      "axis": "axis1",
+      "text": "Was there a moment today where you had to step up and take charge?",
+      "options": [
+        { "label": "A", "text": "Absolutely, I grabbed the reins and ran with it.", "signal": "axis1:victor", "next": "D1_REFLECT" },
+        { "label": "B", "text": "Kinda — I wanted to but felt stuck.", "signal": "axis1:victim", "next": "D1_REFLECT" },
+        { "label": "C", "text": "Nope, felt more like a passenger than a driver.", "signal": "axis1:victim", "next": "D1_REFLECT" },
+        { "label": "D", "text": "No, but I thought about how I might if given the chance.", "signal": "axis1:victor", "next": "D1_REFLECT" }
+      ]
+    },
+
+    {
+      "id": "D1_REFLECT",
+      "type": "decision",
+      "description": "Compare axis1 victor vs victim tally. Route to the appropriate reflection. Set axis1.dominant in state.",
+      "conditions": [
+        { "if": "state.axis1.victor >= state.axis1.victim", "set": "axis1.dominant = 'victor'", "next": "R1_VICTOR" },
+        { "if": "state.axis1.victim > state.axis1.victor", "set": "axis1.dominant = 'victim'", "next": "R1_VICTIM" }
+      ]
+    },
+
+    {
+      "id": "R1_VICTOR",
+      "type": "reflection",
+      "axis": "axis1",
+      "text": "You showed up with your eyes open today. Even when things got messy, you kept looking for what you could influence. That's not blind optimism — it's a practiced way of moving through uncertainty. You were in the driver's seat more than you might have noticed.",
+      "next": "BRIDGE_1_2"
+    },
+
+    {
+      "id": "R1_VICTIM",
+      "type": "reflection",
+      "axis": "axis1",
+      "text": "Some days just feel like they're happening to you — and that feeling is real. But even in the middle of it, you made at least one call today. Even if it was just how you held yourself through it. Noticing where you had even a sliver of choice is exactly where it starts.",
+      "next": "BRIDGE_1_2"
+    },
+
+    {
+      "id": "BRIDGE_1_2",
+      "type": "bridge",
+      "text": "Now let's shift from how you handled things — to what you gave.",
+      "next": "Q2_A"
+    },
+
+    {
+      "id": "Q2_A",
+      "type": "question",
+      "axis": "axis2",
+      "text": "Think about a recent chat or interaction. Did you find yourself…",
+      "options": [
+        { "label": "A", "text": "Offering a hand without keeping score.", "signal": "axis2:contribution", "next": "Q2_B" },
+        { "label": "B", "text": "Expecting others to owe you something because of who you are.", "signal": "axis2:entitlement", "next": "Q2_B" },
+        { "label": "C", "text": "Sharing your time and effort and appreciating the give-and-take.", "signal": "axis2:contribution", "next": "Q2_B" },
+        { "label": "D", "text": "Waiting for credit or recognition, even if you didn't pitch in much.", "signal": "axis2:entitlement", "next": "Q2_B" }
+      ]
+    },
+
+    {
+      "id": "Q2_B",
+      "type": "question",
+      "axis": "axis2",
+      "text": "When you put energy into something today, how did you feel?",
+      "options": [
+        { "label": "A", "text": "Proud just to be part of it, no strings attached.", "signal": "axis2:contribution", "next": "Q2_C" },
+        { "label": "B", "text": "Like you deserved a shout-out or reward for your effort.", "signal": "axis2:entitlement", "next": "Q2_C" },
+        { "label": "C", "text": "Focused on doing your bit, whether anyone noticed or not.", "signal": "axis2:contribution", "next": "Q2_C" },
+        { "label": "D", "text": "Irritated if your efforts went unnoticed or unappreciated.", "signal": "axis2:entitlement", "next": "Q2_C" }
+      ]
+    },
+
+    {
+      "id": "Q2_C",
+      "type": "question",
+      "axis": "axis2",
+      "text": "When it comes to what you should get from others, what's your stance?",
+      "options": [
+        { "label": "A", "text": "I believe respect and rewards come from what I put in.", "signal": "axis2:contribution", "next": "D2_REFLECT" },
+        { "label": "B", "text": "I'm entitled to special treatment because of who I am.", "signal": "axis2:entitlement", "next": "D2_REFLECT" },
+        { "label": "C", "text": "I'm happy to give without expecting much back.", "signal": "axis2:contribution", "next": "D2_REFLECT" },
+        { "label": "D", "text": "I often feel I deserve more than I get.", "signal": "axis2:entitlement", "next": "D2_REFLECT" }
+      ]
+    },
+
+    {
+      "id": "D2_REFLECT",
+      "type": "decision",
+      "description": "Compare axis2 contribution vs entitlement tally. Route to the appropriate reflection. Set axis2.dominant in state.",
+      "conditions": [
+        { "if": "state.axis2.contribution >= state.axis2.entitlement", "set": "axis2.dominant = 'contribution'", "next": "R2_CONTRIBUTION" },
+        { "if": "state.axis2.entitlement > state.axis2.contribution", "set": "axis2.dominant = 'entitlement'", "next": "R2_ENTITLEMENT" }
+      ]
+    },
+
+    {
+      "id": "R2_CONTRIBUTION",
+      "type": "reflection",
+      "axis": "axis2",
+      "text": "Today you gave something — effort, attention, care — without keeping a tally. That's not a small thing. Contribution without scorekeeping is how trust gets built, slowly and quietly. You were doing that today.",
+      "next": "BRIDGE_2_3"
+    },
+
+    {
+      "id": "R2_ENTITLEMENT",
+      "type": "reflection",
+      "axis": "axis2",
+      "text": "A lot of today's mental energy went toward what you should be getting — recognition, credit, fairness. That's human, and sometimes that frustration is valid. But it's worth sitting with: what did you put in the pot today, independent of what you expected back? That shift — from receiving to giving — is where satisfaction usually lives.",
+      "next": "BRIDGE_2_3"
+    },
+
+    {
+      "id": "BRIDGE_2_3",
+      "type": "bridge",
+      "text": "You've reflected on how you handled things and what you gave. Now let's zoom out — how wide was your world today?",
+      "next": "Q3_A"
+    },
+
+    {
+      "id": "Q3_A",
+      "type": "question",
+      "axis": "axis3",
+      "text": "Facing today's challenges, who was front and center in your mind?",
+      "options": [
+        { "label": "A", "text": "Me, myself, and I.", "signal": "axis3:self", "next": "Q3_B" },
+        { "label": "B", "text": "Mostly me, but a few close folks popped up too.", "signal": "axis3:self", "next": "Q3_B" },
+        { "label": "C", "text": "How my actions affected those around me.", "signal": "axis3:altro", "next": "Q3_B" },
+        { "label": "D", "text": "Everyone involved, and the bigger picture beyond just me.", "signal": "axis3:altro", "next": "Q3_B" }
+      ]
+    },
+
+    {
+      "id": "Q3_B",
+      "type": "question",
+      "axis": "axis3",
+      "text": "Did you stop to think about how your choices today might ripple out to others?",
+      "options": [
+        { "label": "A", "text": "Nope, I was all about my own stuff.", "signal": "axis3:self", "next": "Q3_C" },
+        { "label": "B", "text": "Occasionally, but mostly focused on me.", "signal": "axis3:self", "next": "Q3_C" },
+        { "label": "C", "text": "Yeah, I tried to be thoughtful about others.", "signal": "axis3:altro", "next": "Q3_C" },
+        { "label": "D", "text": "Definitely, I aimed to make a positive difference.", "signal": "axis3:altro", "next": "Q3_C" }
+      ]
+    },
+
+    {
+      "id": "Q3_C",
+      "type": "question",
+      "axis": "axis3",
+      "text": "When looking back on your day, how wide was your circle of concern?",
+      "options": [
+        { "label": "A", "text": "Just me and my own world.", "signal": "axis3:self", "next": "D3_REFLECT" },
+        { "label": "B", "text": "Me and a tight-knit group of people.", "signal": "axis3:self", "next": "D3_REFLECT" },
+        { "label": "C", "text": "My community or team.", "signal": "axis3:altro", "next": "D3_REFLECT" },
+        { "label": "D", "text": "The whole crew — everyone affected by what I did.", "signal": "axis3:altro", "next": "D3_REFLECT" }
+      ]
+    },
+
+    {
+      "id": "D3_REFLECT",
+      "type": "decision",
+      "description": "Compare axis3 altro vs self tally. Route to the appropriate reflection. Set axis3.dominant in state.",
+      "conditions": [
+        { "if": "state.axis3.altro >= state.axis3.self", "set": "axis3.dominant = 'altro'", "next": "R3_ALTROCENTRIC" },
+        { "if": "state.axis3.self > state.axis3.altro", "set": "axis3.dominant = 'self'", "next": "R3_SELFCENTRIC" }
+      ]
+    },
+
+    {
+      "id": "R3_ALTROCENTRIC",
+      "type": "reflection",
+      "axis": "axis3",
+      "text": "You kept others in the frame today. That kind of awareness — knowing your choices ripple — is worth pausing on. It doesn't mean ignoring your own needs. It means you were thinking at a larger scale than most people manage on an ordinary day.",
+      "next": "BRIDGE_3_SUMMARY"
+    },
+
+    {
+      "id": "R3_SELFCENTRIC",
+      "type": "reflection",
+      "axis": "axis3",
+      "text": "Today's lens was mostly pointed inward. That's not wrong — some days demand it. But here's a small question to sit with: was there a moment where someone else's experience crossed your mind, even briefly? That moment — however small — is where the wider view begins.",
+      "next": "BRIDGE_3_SUMMARY"
+    },
+
+    {
+      "id": "BRIDGE_3_SUMMARY",
+      "type": "bridge",
+      "text": "You've walked through the whole day now. Here's what it adds up to.",
+      "next": "D_SUMMARY"
+    },
+
+    {
+      "id": "D_SUMMARY",
+      "type": "decision",
+      "description": "Check if all three axes lean toward the growth pole (victor + contribution + altro). Route to strong or default summary. Sets summary_profile in state.",
+      "conditions": [
+        {
+          "if": "axis1.dominant == 'victor' AND axis2.dominant == 'contribution' AND axis3.dominant == 'altro'",
+          "set": "summary_profile = 'full_growth'",
+          "next": "SUMMARY_STRONG"
+        },
+        {
+          "if": "true",
+          "set": "summary_profile = 'mixed'",
+          "next": "SUMMARY_DEFAULT"
+        }
+      ]
+    },
+
+    {
+      "id": "SUMMARY_STRONG",
+      "type": "summary",
+      "text": "Today you leaned {axis1.dominant} on agency, {axis2.dominant} on orientation, and {axis3.dominant} on your radius of concern. That's three for three. You steered your day, gave without keeping score, and kept others in view. That combination is rarer than it sounds. Carry it forward.",
+      "interpolations": [
+        "axis1.dominant",
+        "axis2.dominant",
+        "axis3.dominant"
+      ],
+      "next": "END"
+    },
+
+    {
+      "id": "SUMMARY_DEFAULT",
+      "type": "summary",
+      "text": "Today you leaned {axis1.dominant} on agency, {axis2.dominant} on orientation, and {axis3.dominant} on your radius of concern. Every day lands differently on these three axes — that's not a flaw, it's just honest. The axis where you're still growing is the most interesting one to watch tomorrow.",
+      "interpolations": [
+        "axis1.dominant",
+        "axis2.dominant",
+        "axis3.dominant"
+      ],
+      "next": "END"
+    },
+
+    {
+      "id": "END",
+      "type": "end",
+      "text": "That's it for tonight. See you tomorrow.",
+      "next": null
+    }
+
+  ]
+}
